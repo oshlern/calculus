@@ -14,11 +14,49 @@ def sequence_maker(p_value, konstant, num_iteration):
         p_value = konstant * p_value*(1 - p_value) # evaluating equation
     return output_seq # after 30 rounds, return output list
 
+def clear(all_seqs):
+    all_seqs = []
+    print("all_seqs clear")
+
 # This plots everything
 def plot_all():
-  for output in all_seqs: # for every list of outputs in all_seqs
-    plt.plot(output) # plot the output
+    for output in all_seqs: # for every list of outputs in all_seqs
+        plt.plot(output) # plot the output
 
-plt.plot(sequence_maker(p_value,konstant,30),"r-") # to graph sequence
+if __name__ == "__main__":
+    # Question 1 Part 1
+    clear(all_seqs)
 
-plt.savefig('/Users/laumitt/Desktop/plot.png')
+    print("Question 1 - plot and plot1")
+    plt.plot(sequence_maker(p_value,konstant,30),"r-") # to graph sequence
+    plt.savefig('/Users/laumitt/Desktop/plot.png') # to save the graph
+
+    # Question 1 Part 2
+
+    clear(all_seqs)
+
+    # adding lists of outputs for different p values
+    for i in range(100):
+        p_value = 0
+        all_seqs.append(sequence_maker(p_value, 1.5, 30))
+        p_value = p_value + 0.01
+
+        # adding lists of outputs for different k values
+    for i in range(200):
+        k = 1
+        all_seqs.append(sequence_maker(0.5, k, 30))
+        k = k + 0.01
+
+    plot_all()
+    plt.savefig('/Users/laumitt/Desktop/plot1.png')
+
+    # Question 2
+
+    clear(all_seqs)
+
+    print("Question 2 - plot2")
+    for i in range(20):
+        all_seqs.append(sequence_maker(p_value=0.5, konstant=3.2+(i*0.01), num_iteration=1000))
+
+    plot_all()
+    plt.savefig('/Users/laumitt/Desktop/plot2.png')
