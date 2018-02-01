@@ -35,7 +35,7 @@ def infinite(infinite_sum, sum_outputs, flag):
 
 if __name__ == "__main__":
     outputs, labelled_outputs, sum_outputs = sequence(a_one, constant, num_iteration, outputs, labelled_outputs, sum_outputs) # calculate sequence
-    infinite(infinite_sum, sum_outputs, flag)
+    infinite_sum, flag = infinite(infinite_sum, sum_outputs, flag)
     print("did it work {}".format(flag))
     print("labelled outputs = {}".format(labelled_outputs))
     print("sum outputs = {}".format(sum_outputs))
