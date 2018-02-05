@@ -1,6 +1,6 @@
 # importing things for later
-import matplotlib.pyplot as plt
-import math
+import matplotlib.pyplot as plt # for plotting
+import math # for summing
 
 a_null = 0 # because multiplying by 0 breaks it
 a_one = -1/(math.sqrt(3)) # to start from
