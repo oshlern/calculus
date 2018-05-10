@@ -6,14 +6,26 @@ payload = 10^3 # does not change
 payload_carry = 0 # mass of rocket that stays with payload
 
 def check_variables(rocket_init, fuel_init):
-    if rocket_init ≤ (fuel_init/10):
+    if rocket_init < (fuel_init/10):
         have_error = True
     else:
         have_error = False
+    return have_error
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     while True:
-        check_variables(rocket_init, fuel_init)
-        if have_error = True:
-            print("Error")
+        print("rocket init = ?")
+        rocket_init = int(input())
+        print("engine num = ?")
+        engine_num = int(input())
+        print("fuel init = ?")
+        fuel_init = int(input())
+        print("payload carry = ?")
+        payload_carry = int(input())
+        have_error = check_variables(rocket_init, fuel_init)
+        if have_error == True:
+            print("error: rocket too low or fuel too high")
+            break
+        else:
+            print("no error")
             break
