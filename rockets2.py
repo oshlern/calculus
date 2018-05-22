@@ -60,56 +60,69 @@ def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, vel_burn
     eng_mass_struct = (rocket_mass_total - PAYLOAD) - eng_mass_fuel/eng_num # find mass of engine without fuel
     print("Structural engine mass: " + str(eng_mass_struct) + " Kg.")
     stages_left = eng_num # each engine is a stage
-    print(str(stages_left) + " stages left.")
-    vel_burnout_temp = [] # list to store all velocities independently
-    vel_burnout_neg = 0
-    i = 0
-    for n in range(eng_num): # jen's suggestion for changing engine size: for size in [list of things that can change]
-        stages_list.append(stages_left)
+    print(str(stages_left) + " stages.")
+    vel_burnout_temp = [] # to store velocities
+    i = 0 # to iterate over list of velocities, starting at index 0
+    # jen's suggestion for changing engine size: for size in [list of things that can change]
+    for n in range(eng_num): # iterate over each stage
+        stages_list.append(stages_left) # to graph by stage later
         current_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left) + PAYLOAD
+        # current stage mass is the mass of an engine times the number of stages left plus the mass of the payload
         print("Mass of current stage: " + str(current_stage_mass) + " Kg.")
         next_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left - 1) + PAYLOAD
+        # next stage mass is the mass of an engine times the number of stages left minus the current plus the mass of the payload
         print("Mass of next stage: " + str(next_stage_mass) + " Kg.")
-        current_list.append(current_stage_mass)
-        next_list.append(next_stage_mass)
+        current_list.append(current_stage_mass) # to graph masses by stage later
+        next_list.append(next_stage_mass) # to graph masses by stage later
         E_k = ((eng_mass_struct)/(eng_mass_struct + eng_mass_fuel))
+        # structural ratio of a stage is the structural mass of an engine divided by the total mass of an engine
         print("Structural ratio: " + str(E_k) + ".")
-        E_k_list.append(E_k)
+        E_k_list.append(E_k) # to graph ratios by stage later
         P_k = ((next_stage_mass)/(current_stage_mass))
+        # payload ratio of a stage is the mass of the next stage divided by the mass of the current stage
+        # payload ratio defines how much mass the engine has to push
         print("Payload ratio: " + str(P_k) + ".")
-        P_k_list.append(P_k)
+        P_k_list.append(P_k) # to graph ratios by stage later
         vel_burnout_eng = -eng_vel * math.log((E_k + ((1 - E_k) * P_k)))
+        # the velocity of burnout of an engine is the negative velocity of exhaust of the engine times
+        # the log of the structural ratio plus one minus the structural ratio times the payload ratio
         print("Single engine velocity at burnout: " + str(vel_burnout_eng) + ".")
-        vel_burnout_temp.append(vel_burnout_eng)
-        vel_list.append(vel_burnout_eng)
-        stages_left -= 1
-        print(str(stages_left) + "stages left.")
-    for x in vel_burnout_temp:
-        vel_burnout_total += (vel_burnout_temp[i])
-        i += 1
+        vel_burnout_temp.append(vel_burnout_eng) # to store velocity by stage and add up later
+        vel_list.append(vel_burnout_eng) # to graph the burnout velocities later
+        stages_left -= 1 # once the engine burns out it is jettisonned
+        print(str(stages_left) + " stages left.")
+        print("-------")
+    for x in vel_burnout_temp: # iterate over each stage
+        vel_burnout_total += (vel_burnout_temp[i]) # add up velocities from each stage
+        i += 1 # move to next stage
     print("Total velocity at burnout: " + str(vel_burnout_total) + " Km/s.")
     return vel_burnout_total, stages_list, current_list, next_list, E_k_list, P_k_list, vel_list
+    # total velocity at burnout returned to check if rocket escaped the sun
+    # lists returned to plot later
 
-def plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_list, eng_num):
+def plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_list):
+    # Figure 1: Current and Next Stage Mass by Stage
     plt.figure(1)
     plt.title("Current and Next Stage Mass by Stage")
-    plt.plot(stages_list, current_list, 'b-', label = "Current Stage Mass")
-    plt.plot(stages_list, next_list, 'r-', label = "Next Stage Mass")
+    plt.plot(stages_list, current_list, 'b^-', label = "Current Stage Mass")
+    plt.plot(stages_list, next_list, 'r^-', label = "Next Stage Mass")
     plt.legend(loc = 'upper right')
     plt.xlabel('Stages Left')
     plt.ylabel('Mass in Kg')
-    plt.gca().invert_xaxis()
+    plt.gca().invert_xaxis() # stages count down to 0, so invert to read from left to right
+    # Figure 2: Structural and Payload Ratio by Stage
     plt.figure(2)
     plt.title("Structural and Payload Ratio by Stage")
-    plt.plot(stages_list, E_k_list, 'g-', label = "Structural Ratio")
-    plt.plot(stages_list, P_k_list, 'k-', label = "Payload Ratio")
-    plt.legend(loc = 'center right')
+    plt.plot(stages_list, E_k_list, 'g^-', label = "Structural Ratio")
+    plt.plot(stages_list, P_k_list, 'k^-', label = "Payload Ratio")
+    plt.legend(loc = 'center left')
     plt.xlabel('Stages Left')
     plt.ylabel('Ratio')
     plt.gca().invert_xaxis()
+    # Figure 3: Burnout Velocity by Stage
     plt.figure(3)
-    plt.title("Velocity by Stage")
-    plt.plot(stages_list, vel_list, 'k-', label = "Velocity")
+    plt.title("Burnout Velocity by Stage")
+    plt.plot(stages_list, vel_list, 'k^-', label = "Velocity")
     plt.legend(loc = 'upper left')
     plt.xlabel('Stages left')
     plt.ylabel('Velocity in Km/s')
@@ -135,6 +148,6 @@ if __name__ == '__main__':
             break
         vel_burnout_total, stages_list, current_list, next_list, E_k_list, P_k_list, vel_list = calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, vel_burnout_total, stages_list, current_list, next_list, E_k_list, P_k_list, vel_list)
         calc_done = check_answer(VEL_TARG, vel_burnout_total, calc_done)
-        plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_list, eng_num)
+        plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_list)
         if calc_done == True:
             break
