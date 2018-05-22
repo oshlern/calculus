@@ -61,10 +61,10 @@ def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, vel_burn
     print("eng_mass_struct " + str(eng_mass_struct))
     stages_left = eng_num # each engine is a stage
     print("stages_left " + str(stages_left))
-    vel_burnout_temp = [] # list to 
+    vel_burnout_temp = [] # list to store all velocities independently
     vel_burnout_neg = 0
     i = 0
-    for n in range(eng_num):
+    for n in range(eng_num): # jen's suggestion for changing engine size: for size in [list of things that can change]
         stages_list.append(stages_left)
         current_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left) + PAYLOAD
         print("current_stage_mass " + str(current_stage_mass))
