@@ -132,7 +132,7 @@ def plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_li
 def check_answer(VEL_TARG, vel_burnout_total, calc_done):
     if vel_burnout_total >= VEL_TARG:
         vel_excess = vel_burnout_total - VEL_TARG
-        print("Escaped Sun with " + str(vel_excess) + " Km/s.")
+        print("Escaped sun with " + str(vel_excess) + " Km/s.")
     else:
         vel_short = VEL_TARG - vel_burnout_total
         print("Did not escape by " + str(vel_short) + " Km/s.")
