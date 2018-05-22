@@ -10,14 +10,29 @@ eng_mass_fuel = 0 # single engine fuel mass in Kg
 eng_num = 0 # number of engines
 eng_type_input = None # type of engine to be used, refers to eng_dict
 eng_vel = None # burnout velocity of engine, as given by eng_dict
-eng_dict = { # dictionary of types of engines and max velocity in Km/s
-    'jet' : 29,
-    'solid' : 2.5,
-    'liquid' : 4.4,
-    'ion' : 29,
-    'electrostatic ion' : 210,
-    'magnetoplasmic' : 160,
-    'photonic' : 299792.458
+eng_names = [] # list of names of engines
+eng_all = None
+eng_dict = { # dictionary of types of engines and exhaust velocity in Km/s
+    'Solid' : 2.5,
+    'NK-33' : 3.25,
+    'Liquid' : 4.4,
+    'SSME' : 4.44,
+    'Ramjet' : 7.8,
+    'J-58' : 19,
+    'EJ200 reheat minimum' : 20.4,
+    'EJ200 reheat maximum' : 21.3,
+    'Ion' : 29,
+    'Jet' : 29,
+    'RR/SO 593' : 29.5,
+    'VASIMR minimum' : 30,
+    'EJ200 dry minimum' : 44,
+    'EJ200 dry maximum' : 48,
+    'Boeing CF6' : 58.4,
+    'GE CF6' : 115,
+    'VASIMR maximum' : 120,
+    'Magnetoplasmic' : 160,
+    'Electrostatic Ion' : 210,
+    'Photonic' : 299792.458
 }
 stage_mass = 0 # mass of current stage including fuel plus all stages above in Kg
 vel_burnout_total = 0 # total velocity at burnout of final engine
@@ -31,7 +46,7 @@ E_k_list = [] # list of structural ratios
 P_k_list = [] # list of payload ratios
 vel_list = [] # list of velocities at burnout
 
-def get_inputs():
+def get_inputs(eng_names, eng_all):
     print("Input total rocket mass, in Kg")
     rocket_mass_total = int(input()) # store total rocket mass
     print("Input total fuel mass, in Kg")
@@ -39,7 +54,13 @@ def get_inputs():
     print("Input number of engines")
     eng_num = int(input()) # store number of engines
     print("Input type of engine")
-    print("Options: " + str(eng_dict))
+    for key in eng_dict:
+        eng_names.append(key)
+    i = 0
+    for i in eng_names:
+        eng_all += eng_names[i]
+        i += 1
+    print("Options: " + str(eng_all))
     eng_type_input = str(input()) # receive type of engine
     eng_vel = eng_dict[eng_type_input] # use type of engine to find engine velocity
     return rocket_mass_total, fuel_total, eng_num, eng_vel
@@ -142,7 +163,7 @@ def check_answer(VEL_TARG, vel_burnout_total, calc_done):
 if __name__ == '__main__':
     while True:
         print("Currently only using engine velocities and ignoring specific impulse.")
-        rocket_mass_total, fuel_total, eng_num, eng_vel = get_inputs()
+        rocket_mass_total, fuel_total, eng_num, eng_vel = get_inputs(eng_names, eng_all)
         have_error = check_inputs(rocket_mass_total, fuel_total, have_error, PAYLOAD)
         if have_error == True:
             break
