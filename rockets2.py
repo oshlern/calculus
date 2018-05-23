@@ -1,3 +1,10 @@
+# TO DO LIST
+# - let user decide same/different engine types
+# - let user decide same/different engine sizes
+# - check that calculation is going for all stages including stages_left = 0
+# - find more engines?
+# - calibrate with known escaping engines
+
 import math
 import matplotlib.pyplot as plt
 
@@ -10,8 +17,6 @@ eng_mass_fuel = 0 # single engine fuel mass in Kg
 eng_num = 0 # number of engines
 eng_type_input = None # type of engine to be used, refers to eng_dict
 eng_vel = None # burnout velocity of engine, as given by eng_dict
-eng_names = [] # list of names of engines
-eng_all = None
 eng_dict = { # dictionary of types of engines and exhaust velocity in Km/s
     'Solid' : 2.5,
     'NK-33' : 3.25,
@@ -46,7 +51,7 @@ E_k_list = [] # list of structural ratios
 P_k_list = [] # list of payload ratios
 vel_list = [] # list of velocities at burnout
 
-def get_inputs(eng_names, eng_all):
+def get_inputs():
     print("Input total rocket mass, in Kg (numbers only, must be larger than 1000 Kg)")
     rocket_mass_total = int(input()) # store total rocket mass
     print("Input total fuel mass, in Kg (numbers only)")
@@ -159,7 +164,7 @@ def check_answer(VEL_TARG, vel_burnout_total, calc_done):
 if __name__ == '__main__':
     while True:
         print("Currently only using engine velocities and ignoring specific impulse.")
-        rocket_mass_total, fuel_total, eng_num, eng_vel = get_inputs(eng_names, eng_all)
+        rocket_mass_total, fuel_total, eng_num, eng_vel = get_inputs()
         have_error = check_inputs(rocket_mass_total, fuel_total, have_error, PAYLOAD)
         if have_error == True:
             break
