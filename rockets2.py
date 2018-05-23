@@ -47,20 +47,16 @@ P_k_list = [] # list of payload ratios
 vel_list = [] # list of velocities at burnout
 
 def get_inputs(eng_names, eng_all):
-    print("Input total rocket mass, in Kg")
+    print("Input total rocket mass, in Kg (numbers only, must be larger than 1000 Kg)")
     rocket_mass_total = int(input()) # store total rocket mass
-    print("Input total fuel mass, in Kg")
+    print("Input total fuel mass, in Kg (numbers only)")
     fuel_total = int(input()) # store total fuel mass
-    print("Input number of engines")
+    print("Input number of engines (numbers only)")
     eng_num = int(input()) # store number of engines
-    print("Input type of engine")
-    for key in eng_dict:
-        eng_names.append(key)
-    i = 0
-    for i in eng_names:
-        eng_all += eng_names[i]
-        i += 1
-    print("Options: " + str(eng_all))
+    print("Input type of engine (exact capitalization only)")
+    print("Options: " + '\n' + "Name - Exhaust Velocity in Km/s")
+    for key, value in eng_dict.items():
+        print(str(key) + ' - ' + str(value)) # to print names and velocities of engines
     eng_type_input = str(input()) # receive type of engine
     eng_vel = eng_dict[eng_type_input] # use type of engine to find engine velocity
     return rocket_mass_total, fuel_total, eng_num, eng_vel
