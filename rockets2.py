@@ -36,7 +36,7 @@ eng_dict = { # dictionary of types of engines and exhaust velocity in Km/s
 stage_mass = 0 # mass of current stage including fuel plus all stages above in Kg
 vel_burnout_total = 0 # total velocity at burnout of final engine
 vel_burnout_eng = 0 # velocity at burnout of single engine
-have_error = False # error flag
+have_error = False
 calc_done = False # calculation done flag
 stages_list = [] # list of number of stages left
 current_list = [] # list of mass of current stages
@@ -45,6 +45,9 @@ E_k_list = [] # list of structural ratios
 P_k_list = [] # list of payload ratios
 vel_list = [] # list of velocities at burnout
 
+class error(Exception):
+    pass
+
 def get_inputs(have_error, PAYLOAD, eng_vel_list, eng_size_list):
     print("Input total rocket mass, in Kg (numbers only, must be larger than 1000 Kg).")
     rocket_mass_total = int(input()) # store total rocket mass
@@ -52,11 +55,10 @@ def get_inputs(have_error, PAYLOAD, eng_vel_list, eng_size_list):
     fuel_total = int(input()) # store total fuel mass
     if rocket_mass_total - fuel_total < (0.1 * fuel_total) or rocket_mass_total < PAYLOAD:
     # if the rocket mass is less than 10% of the fuel mass or if the rocket mass is less than the payload
-        print("Error: rocket mass is too small.")
-        have_error = True # flag to stop program
+        raise error("Error: rocket mass is too small.")
+        # have_error = True # flag to stop program
     else:
         print("Rocket mass is acceptable.")
-        have_error = False # continue with program
     print("Input number of engines (numbers only).")
     eng_num = int(input()) # store number of engines
     eng_iter = eng_num
@@ -77,11 +79,9 @@ def get_inputs(have_error, PAYLOAD, eng_vel_list, eng_size_list):
         print("-------")
         eng_iter -= 1
     if eng_size_total != 100: # if the engine sizes don't add up to 100%
-        print("Error: engine sizes do not equal 100%")
-        have_error = True
+        raise error("Error: engine sizes do not equal 100%")
     else:
         print("Engine sizes acceptable")
-        have_error = False
     print("-------")
     return rocket_mass_total, fuel_total, eng_num, eng_vel_list, have_error
 
@@ -183,8 +183,8 @@ if __name__ == '__main__':
         print("Currently only using engine velocities and ignoring specific impulse.")
         print("Please give inputs as numbers only or exactly as shown.")
         rocket_mass_total, fuel_total, eng_num, eng_vel_list, have_error = get_inputs(have_error, PAYLOAD, eng_vel_list, eng_size_list)
-        if have_error == True:
-            break
+        # if have_error == True:
+        #     break
         calc_done, stages_list, current_list, next_list, E_k_list, P_k_list, vel_list = calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG)
         plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_list)
         if calc_done == True:
