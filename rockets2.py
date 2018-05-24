@@ -2,7 +2,7 @@
 # - let user decide same/different engine types
 # - let user decide same/different engine sizes
 # - check that calculation is going for all stages including stages_left = 0
-# - find more engines?
+#       i think it is but i can't actually tell
 # - calibrate with known escaping engines
 
 import math
@@ -58,7 +58,7 @@ def get_inputs():
     fuel_total = int(input()) # store total fuel mass
     print("Input number of engines (numbers only)")
     eng_num = int(input()) # store number of engines
-    print("Input type of engine (exact capitalization only)")
+    print("Input type of engine (type only name with exact capitalization)")
     print("Options: " + '\n' + "Name - Exhaust Velocity in Km/s")
     for key, value in eng_dict.items():
         print(str(key) + ' - ' + str(value)) # to print names and velocities of engines
@@ -85,15 +85,17 @@ def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, vel_burn
     print(str(stages_left) + " stages.")
     vel_burnout_temp = [] # to store velocities
     i = 0 # to iterate over list of velocities, starting at index 0
-    # jen's suggestion for changing engine size: for size in [list of things that can change]
     for n in range(eng_num): # iterate over each stage
         stages_list.append(stages_left) # to graph by stage later
+        print("Calculating for stage #" + str(stages_left) + ".")
         current_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left) + PAYLOAD
         # current stage mass is the mass of an engine times the number of stages left plus the mass of the payload
         print("Mass of current stage: " + str(current_stage_mass) + " Kg.")
         next_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left - 1) + PAYLOAD
         # next stage mass is the mass of an engine times the number of stages left minus the current plus the mass of the payload
         print("Mass of next stage: " + str(next_stage_mass) + " Kg.")
+        if current_stage_mass == next_stage_mass == PAYLOAD:
+            break
         current_list.append(current_stage_mass) # to graph masses by stage later
         next_list.append(next_stage_mass) # to graph masses by stage later
         E_k = ((eng_mass_struct)/(eng_mass_struct + eng_mass_fuel))
@@ -111,8 +113,9 @@ def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, vel_burn
         print("Single engine velocity at burnout: " + str(vel_burnout_eng) + ".")
         vel_burnout_temp.append(vel_burnout_eng) # to store velocity by stage and add up later
         vel_list.append(vel_burnout_eng) # to graph the burnout velocities later
-        stages_left -= 1 # once the engine burns out it is jettisonned
-        print(str(stages_left) + " stages left.")
+        stages_left = stages_left - 1 # once the engine burns out it is jettisonned
+        if stages_left == -1:
+            break
         print("-------")
     for x in vel_burnout_temp: # iterate over each stage
         vel_burnout_total += (vel_burnout_temp[i]) # add up velocities from each stage
@@ -164,6 +167,7 @@ def check_answer(VEL_TARG, vel_burnout_total, calc_done):
 if __name__ == '__main__':
     while True:
         print("Currently only using engine velocities and ignoring specific impulse.")
+        print("Please give inputs as numbers only or exactly as shown.")
         rocket_mass_total, fuel_total, eng_num, eng_vel = get_inputs()
         have_error = check_inputs(rocket_mass_total, fuel_total, have_error, PAYLOAD)
         if have_error == True:
