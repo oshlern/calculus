@@ -66,29 +66,28 @@ next_list = [] # list of mass of next stages
 E_k_list = [] # list of structural ratios
 P_k_list = [] # list of payload ratios
 vel_list = [] # list of velocities at burnout
-testing_flag = False # to bypass printslow if testing because it gets annoying
+testing_flag = None # to bypass printslow if testing because it gets annoying
 
-class error(Exception):
-    pass
-
-def check_test(testing_flag):
+def check_test():
     print("Testing? y/n")
-    test = input()
-    if test == ('y', 'Y'):
+    test = str(input())
+    if test == 'y':
         testing_flag = True
     else:
         testing_flag = False
+    return testing_flag
 
 def printslow(testing_flag, text):
-    testing_flag = True
-    for x in text:
-        sys.stdout.write(x)
-        sys.stdout.flush()
-#        if testing_flag == False:
-        time.sleep(0.05)
-    print('\n')
+    if testing_flag == True:
+        print(text)
+    else:
+        for x in text:
+            sys.stdout.write(x)
+            sys.stdout.flush()
+            time.sleep(0.05)
+        print('\n')
 
-def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict):
+def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict, testing_flag):
     printslow(testing_flag, "Input total rocket mass, in Kg (numbers only, must be greater than or equal to " + str(PAYLOAD) + " Kg).")
     rocket_mass_total = int(input()) # store total rocket mass
     while rocket_mass_total < PAYLOAD:
@@ -98,7 +97,8 @@ def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict):
             break
     printslow(testing_flag, "Rocket mass acceptable.")
     print("-------" + '\n')
-    printslow(testing_flag, "Input total fuel mass, in Kg (numbers only, must be equal to 90% of rocket mass or less).")
+    printslow(testing_flag, "Input total fuel mass, in Kg (numbers only, must be less than or equal to 90% of rocket mass).")
+    printslow(testing_flag, "Max fuel mass: " + str(0.9 * rocket_mass_total) + " Kg.")
     fuel_total = int(input()) # store total fuel mass
     while rocket_mass_total - fuel_total < (0.1 * fuel_total):
         printslow(testing_flag, "Error: rocket mass is too small or fuel mass too large. Please try again.")
@@ -109,6 +109,7 @@ def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict):
     printslow(testing_flag, "Rocket and fuel masses acceptable.")
     print("-------" + '\n')
     printslow(testing_flag, "Input number of engines (numbers only).")
+    printslow(testing_flag, "Note that you will have to individually set all of these. Recommended maximum: 5 engines.")
     eng_num = int(input()) # store number of engines
     eng_iter = eng_num
     printslow(testing_flag, "Engine type options: " + '\n' + '\n' + "Name - Exhaust Velocity in Km/s.")
@@ -118,7 +119,7 @@ def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict):
     eng_size_total = 0
     eng_size_left = 100
     for x in range(eng_num):
-        printslow(testing_flag, "Input type of engine #" + str(eng_num - eng_iter + 1) + " (type only name with exact capitalization).")
+        printslow(testing_flag, "Input type of engine #" + str(eng_num - eng_iter + 1) + " (type only name).")
         eng_type_input = str(input()) # receive type of engine
         eng_vel_list.append(eng_dict[eng_type_input]) # use type of engine to find engine velocity
         if eng_iter != 1:
@@ -137,31 +138,31 @@ def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict):
         eng_size_list.append(eng_size_input) # to store size of engine
         eng_size_total += eng_size_input # to check sizes add up to 100%
         eng_size_left = 100 - eng_size_total
-        printslow(testing_flag, "Engine #" + str(eng_iter) + " recorded.")
+        printslow(testing_flag, "Engine #" + str(eng_num - eng_iter + 1) + " recorded.")
         print("-------" + '\n')
         eng_iter -= 1
     if eng_size_total != 100:
         printslow(testing_flag, "Error: engine sizes do not equal 100%")
-        raise error() # if the engine sizes don't add up to 100%
     else:
         printslow(testing_flag, "Engine sizes acceptable")
     print("-------" + '\n')
     return rocket_mass_total, fuel_total, eng_num, eng_vel_list
 
-def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG):
+def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG, testing_flag):
     vel_burnout_temp = [] # to store velocities
     vel_burnout_total = 0
     i = 0 # to iterate over list of velocities, starting at index 0
     stages_left = eng_num # each engine is a stage
+    eng_iter = eng_num
     printslow(testing_flag, str(stages_left) + " stages.")
     for n in range(eng_num): # iterate over number of stages
         eng_mass_fuel = fuel_total * eng_size_list[n] # find mass of fuel per engine
-        printslow(testing_flag, "Fuel engine mass for engine #" + str(eng_num - n) + ": " + str(eng_mass_fuel) + " Kg.")
+        printslow(testing_flag, "Fuel engine mass for engine #" + str(eng_num - eng_iter + 1) + ": " + str(eng_mass_fuel) + " Kg.")
         eng_mass_struct = (rocket_mass_total - fuel_total) * eng_size_list[n] # find mass of engine without fuel
-        printslow(testing_flag, "Structural engine mass for engine #" + str(eng_num - n) + ": " + str(eng_mass_struct) + " Kg.")
+        printslow(testing_flag, "Structural engine mass for engine #" + str(eng_num - eng_iter + 1) + ": " + str(eng_mass_struct) + " Kg.")
         eng_vel = eng_vel_list[n]
-        stages_list.append(stages_left) # to graph by stage later
-        printslow(testing_flag, "Calculating for stage #" + str(stages_left) + ".")
+        stages_list.append(eng_num - eng_iter + 1) # to graph by stage later
+        printslow(testing_flag, "Calculating for stage #" + str(eng_num - eng_iter + 1) + ".")
         current_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left) + PAYLOAD
         # current stage mass is the mass of an engine times the number of stages left plus the mass of the payload
         printslow(testing_flag, "Mass of current stage: " + str(current_stage_mass) + " Kg.")
@@ -182,11 +183,12 @@ def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG
         vel_burnout_eng = -eng_vel * math.log((E_k + ((1 - E_k) * P_k)))
         # the velocity of burnout of an engine is the negative velocity of exhaust of the engine times
         # the log of the structural ratio plus one minus the structural ratio times the payload ratio
-        printslow(testing_flag, "Engine #" + str(n) + " velocity at burnout: " + str(vel_burnout_eng) + ".")
+        printslow(testing_flag, "Engine #" + str(eng_num - eng_iter + 1) + " velocity at burnout: " + str(vel_burnout_eng) + ".")
         vel_burnout_temp.append(vel_burnout_eng) # to store velocity by stage and add up later
         vel_list.append(vel_burnout_eng) # to graph the burnout velocities later
         vel_burnout_total += (vel_burnout_eng) # add up velocities from each stage
-        stages_left = stages_left - 1 # once the engine burns out it is jettisonned
+        stages_left -= 1 # once the engine burns out it is jettisonned
+        eng_iter -= 1
         if stages_left == -1:
             break
         print("-------" + '\n')
@@ -210,36 +212,33 @@ def plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_li
     plt.plot(stages_list, current_list, 'b^-', label = "Current Stage Mass")
     plt.plot(stages_list, next_list, 'r^-', label = "Next Stage Mass")
     plt.legend(loc = 'upper right')
-    plt.xlabel('Stages Left')
+    plt.xlabel('Stage Number')
     plt.ylabel('Mass in Kg')
-    plt.gca().invert_xaxis() # stages count down to 0, so invert to read from left to right
     # Figure 2: Structural and Payload Ratio by Stage
     plt.figure(2)
     plt.title("Structural and Payload Ratio by Stage")
     plt.plot(stages_list, E_k_list, 'g^-', label = "Structural Ratio")
     plt.plot(stages_list, P_k_list, 'k^-', label = "Payload Ratio")
     plt.legend(loc = 'center left')
-    plt.xlabel('Stages Left')
+    plt.xlabel('Stage Number')
     plt.ylabel('Ratio')
-    plt.gca().invert_xaxis()
     # Figure 3: Burnout Velocity by Stage
     plt.figure(3)
     plt.title("Burnout Velocity by Stage")
     plt.plot(stages_list, vel_list, 'k^-', label = "Velocity")
     plt.legend(loc = 'upper left')
-    plt.xlabel('Stages left')
+    plt.xlabel('Stage Number')
     plt.ylabel('Velocity in Km/s')
-    plt.gca().invert_xaxis()
     plt.show()
 
 if __name__ == '__main__':
     while True:
-        testing_flag = False
+        testing_flag = check_test()
         printslow(testing_flag, "This program only uses engine velocities and ignores specific impulses, so it is not technically an accurate simulation of a rocket launch.")
         printslow(testing_flag, "This also assumes that engines instantly use all of their fuel to acheive burnout velocity, are promptly jettisonned, and the next engine lit.")
         printslow(testing_flag, "Please give inputs as numbers only or exactly as shown.")
-        rocket_mass_total, fuel_total, eng_num, eng_vel_list = get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict)
-        calc_done, stages_list, current_list, next_list, E_k_list, P_k_list, vel_list = calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG)
+        rocket_mass_total, fuel_total, eng_num, eng_vel_list = get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict, testing_flag)
+        calc_done, stages_list, current_list, next_list, E_k_list, P_k_list, vel_list = calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG, testing_flag)
         plot_values(stages_list, current_list, next_list, E_k_list, P_k_list, vel_list)
         if calc_done == True:
             break
