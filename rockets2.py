@@ -139,6 +139,7 @@ def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict, testing_flag):
         eng_size_total += eng_size_input # to check sizes add up to 100%
         eng_size_left = 100 - eng_size_total
         printslow(testing_flag, "Engine #" + str(eng_num - eng_iter + 1) + " recorded.")
+        printslow(testing_flag, "Type: " + str(eng_type_input) + ", size: " + str(eng_size_input) + "% of fuel or " + str(fuel_total * (eng_size_input/100)) + " Kg.")
         print("-------" + '\n')
         eng_iter -= 1
     if eng_size_total != 100:
@@ -149,51 +150,34 @@ def get_inputs(PAYLOAD, eng_vel_list, eng_size_list, eng_dict, testing_flag):
     return rocket_mass_total, fuel_total, eng_num, eng_vel_list
 
 def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG, testing_flag):
-    vel_burnout_temp = [] # to store velocities
     vel_burnout_total = 0
-    i = 0 # to iterate over list of velocities, starting at index 0
-    stages_left = eng_num # each engine is a stage
-    eng_iter = eng_num
-    printslow(testing_flag, str(stages_left) + " stages.")
-    for n in range(eng_num): # iterate over number of stages
-        eng_mass_fuel = fuel_total * (eng_size_list[n]/100) # find mass of fuel per engine
-        printslow(testing_flag, "Fuel engine mass for engine #" + str(eng_num - eng_iter + 1) + ": " + str(eng_mass_fuel) + " Kg.")
-        eng_mass_struct = (rocket_mass_total * (eng_size_list[n]/100)) - eng_mass_fuel # find mass of engine without fuel
-        printslow(testing_flag, "Structural engine mass for engine #" + str(eng_num - eng_iter + 1) + ": " + str(eng_mass_struct) + " Kg.")
-        eng_vel = eng_vel_list[n]
-        stages_list.append(eng_num - eng_iter + 1) # to graph by stage later
-        printslow(testing_flag, "Calculating for stage #" + str(eng_num - eng_iter + 1) + ".")
-        current_stage_mass = (rocket_mass_total * (eng_size_list[n]/100)) + PAYLOAD
-        # current stage mass is the mass of an engine times the number of stages left plus the mass of the payload
-        printslow(testing_flag, "Mass of current stage: " + str(current_stage_mass) + " Kg.")
-        if eng_iter != eng_num:
-            next_stage_mass = current_stage_mass - ((rocket_mass_total * (eng_size_list[n+1]/100)))
-        else:
-            next_stage_mass = PAYLOAD
-        # next stage mass is the mass of an engine times the number of stages left minus the current plus the mass of the payload
-        printslow(testing_flag, "Mass of next stage: " + str(next_stage_mass) + " Kg.")
-        current_list.append(current_stage_mass) # to graph masses by stage later
-        next_list.append(next_stage_mass) # to graph masses by stage later
-        E_k = ((eng_mass_struct)/(eng_mass_struct + eng_mass_fuel))
-        # structural ratio of a stage is the structural mass of an engine divided by the total mass of an engine
+    rocket_mass_struct = rocket_mass_total - fuel_total
+    rocket_mass_left = rocket_mass_total
+    for engine in range(eng_num):
+        stages_list.append(engine + 1)
+        printslow(testing_flag, "Calculating for stage #" + str(engine + 1) + ".")
+        eng_mass_fuel = fuel_total * (eng_size_list[engine]/100)
+        printslow(testing_flag, "Fuel engine mass for engine #" + str(engine + 1) + ": " + str(eng_mass_fuel) + " Kg.")
+        eng_mass_struct = rocket_mass_struct * (eng_size_list[engine]/100)
+        printslow(testing_flag, "Structural engine mass for engine #" + str(engine + 1) + ": " + str(eng_mass_struct) + " Kg.")
+        current_eng_mass = eng_mass_fuel + eng_mass_struct
+        current_list.append(current_eng_mass)
+        printslow(testing_flag, "Mass of current stage: " + str(current_eng_mass) + " Kg.")
+        next_eng_mass = rocket_mass_left - current_eng_mass
+        next_list.append(next_eng_mass)
+        printslow(testing_flag, "Mass of next stage: " + str(next_eng_mass) + " Kg.")
+        rocket_mass_left -= current_eng_mass
+        printslow(testing_flag, "Engine #" + str(engine + 1) + " pushing " + str(rocket_mass_left) + " Kg.")
+        E_k = (eng_mass_struct)/(eng_mass_fuel + eng_mass_struct)
         printslow(testing_flag, "Structural ratio: " + str(E_k) + ".")
-        E_k_list.append(E_k) # to graph ratios by stage later
-        P_k = ((next_stage_mass)/(current_stage_mass))
-        # payload ratio of a stage is the mass of the next stage divided by the mass of the current stage
-        # payload ratio defines how much mass the engine has to push
+        E_k_list.append(E_k)
+        P_k = (rocket_mass_left)/(current_eng_mass)
         printslow(testing_flag, "Payload ratio: " + str(P_k) + ".")
-        P_k_list.append(P_k) # to graph ratios by stage later
-        vel_burnout_eng = -eng_vel * math.log((E_k + ((1 - E_k) * P_k)))
-        # the velocity of burnout of an engine is the negative velocity of exhaust of the engine times
-        # the log of the structural ratio plus one minus the structural ratio times the payload ratio
-        printslow(testing_flag, "Engine #" + str(eng_num - eng_iter + 1) + " velocity at burnout: " + str(vel_burnout_eng) + ".")
-        vel_burnout_temp.append(vel_burnout_eng) # to store velocity by stage and add up later
-        vel_list.append(vel_burnout_eng) # to graph the burnout velocities later
-        vel_burnout_total += (vel_burnout_eng) # add up velocities from each stage
-        stages_left -= 1 # once the engine burns out it is jettisonned
-        eng_iter -= 1
-        if stages_left == -1:
-            break
+        P_k_list.append(P_k)
+        eng_vel = eng_vel_list[engine]
+        vel_burnout_eng = -eng_vel * math.log(E_k + (1 - E_k) * P_k)
+        printslow(testing_flag, "Engine #" + str(engine + 1) + " velocity at burnout: " + str(vel_burnout_eng) + ".")
+        vel_list.append(vel_burnout_eng)
         print("-------" + '\n')
     printslow(testing_flag, "Total velocity at burnout: " + str(vel_burnout_total) + " Km/s.")
     if vel_burnout_total >= VEL_TARG: # if the total burnout velocity is greater than 42 Km/s
