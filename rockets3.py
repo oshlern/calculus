@@ -221,9 +221,19 @@ def plot_values(stages_list, current_list, struct_list, pay_list, vel_list):
 if __name__ == "__main__":
     while True:
         testing_flag = check_test()
+        printslow(testing_flag, "Consider the problem of sending a rocket in an interstellar trajectory.\nWe will not be " +
+        "aiming our rocket in any particular direction, so all you need to do is achieve a velocity of " + str(VEL_TARG) +
+        " Km/s, the minimum necessary to escape the gravity of the Sun, leaving from the Earth.\n" +
+        "Structural constraints for the design of rocket engines require that the dry mass of the " +
+        "rocket be no less than 10% of the total fuel mass.\nIn order to improve efficiency, rockets " +
+        "are designed to have multiple stages. Each stage includes separate fuel and an engine which " +
+        "can be jettisoned once its fuel runs out.\nThus, the remaining rocket isn't weighed down " +
+        "by the dry mass of spent stages.\n" +
+        "Use the following program to design and launch a rocket and determine if it can escape the Sun.")
         printslow(testing_flag, "This program only uses engine velocities and ignores specific impulses, so it is not technically an accurate simulation of a rocket launch.")
         printslow(testing_flag, "This also assumes that engines instantly use all of their fuel to achieve burnout velocity, are promptly jettisoned, and the next engine lit.")
-        printslow(testing_flag, "Please give inputs as numbers only or exactly as shown.")
+        printslow(testing_flag, "Please give inputs as numbers only or text as shown.")
+        printslow(testing_flag, "To exit at any time, use the KeyboardInterrupt shortcut (ctrl+C, enter).")
         rocket_mass_total, fuel_mass_total, eng_num, eng_size_list, eng_vel_list = get_inputs(testing_flag, PAYLOAD, eng_dict_print, eng_dict)
         stages_list, current_list, struct_list, pay_list, vel_list = calculate(PAYLOAD, VEL_TARG, testing_flag, rocket_mass_total, fuel_mass_total, eng_num, eng_size_list, eng_vel_list)
         plot_values(stages_list, current_list, struct_list, pay_list, vel_list)
