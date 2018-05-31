@@ -226,4 +226,5 @@ if __name__ == "__main__":
         printslow(testing_flag, "Please give inputs as numbers only or exactly as shown.")
         rocket_mass_total, fuel_mass_total, eng_num, eng_size_list, eng_vel_list = get_inputs(testing_flag, PAYLOAD, eng_dict_print, eng_dict)
         stages_list, current_list, struct_list, pay_list, vel_list = calculate(PAYLOAD, VEL_TARG, testing_flag, rocket_mass_total, fuel_mass_total, eng_num, eng_size_list, eng_vel_list)
+        plot_values(stages_list, current_list, struct_list, pay_list, vel_list)
         break
