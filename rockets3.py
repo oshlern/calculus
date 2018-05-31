@@ -106,7 +106,7 @@ def get_inputs(testing_flag, PAYLOAD, eng_dict_print, eng_dict):
     eng_iter = eng_num # to iterate over number of engines without using original variable
     for x in range(eng_num):
         printslow(testing_flag, "Input type of engine #" + str(eng_num - eng_iter + 1))
-        printslow(testing_flag, "Type only name (exact capitalization doesn't matter)")
+        printslow(testing_flag, "Type only name of engine type.")
         eng_type = str(input())
         while eng_type not in eng_dict:
             printslow(testing_flag, "Error: invalid engine type. Please try again.")
@@ -226,9 +226,9 @@ if __name__ == "__main__":
         " Km/s, the minimum necessary to escape the gravity of the Sun, leaving from the Earth.\n" +
         "Structural constraints for the design of rocket engines require that the dry mass of the " +
         "rocket be no less than 10% of the total fuel mass.\nIn order to improve efficiency, rockets " +
-        "are designed to have multiple stages. Each stage includes separate fuel and an engine which " +
+        "are designed to have multiple stages.\nEach stage includes separate fuel and an engine which " +
         "can be jettisoned once its fuel runs out.\nThus, the remaining rocket isn't weighed down " +
-        "by the dry mass of spent stages.\n" +
+        "by the dry mass of spent stages.\n" + "However, the rocket is still carrying a payload of " + str(PAYLOAD) + " Kg.\n" +
         "Use the following program to design and launch a rocket and determine if it can escape the Sun.")
         printslow(testing_flag, "This program only uses engine velocities and ignores specific impulses, so it is not technically an accurate simulation of a rocket launch.")
         printslow(testing_flag, "This also assumes that engines instantly use all of their fuel to achieve burnout velocity, are promptly jettisoned, and the next engine lit.")
