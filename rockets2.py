@@ -156,17 +156,20 @@ def calculate(rocket_mass_total, fuel_total, eng_num, eng_vel, PAYLOAD, VEL_TARG
     eng_iter = eng_num
     printslow(testing_flag, str(stages_left) + " stages.")
     for n in range(eng_num): # iterate over number of stages
-        eng_mass_fuel = fuel_total * eng_size_list[n] # find mass of fuel per engine
+        eng_mass_fuel = fuel_total * (eng_size_list[n]/100) # find mass of fuel per engine
         printslow(testing_flag, "Fuel engine mass for engine #" + str(eng_num - eng_iter + 1) + ": " + str(eng_mass_fuel) + " Kg.")
-        eng_mass_struct = (rocket_mass_total - fuel_total) * eng_size_list[n] # find mass of engine without fuel
+        eng_mass_struct = (rocket_mass_total * (eng_size_list[n]/100)) - eng_mass_fuel # find mass of engine without fuel
         printslow(testing_flag, "Structural engine mass for engine #" + str(eng_num - eng_iter + 1) + ": " + str(eng_mass_struct) + " Kg.")
         eng_vel = eng_vel_list[n]
         stages_list.append(eng_num - eng_iter + 1) # to graph by stage later
         printslow(testing_flag, "Calculating for stage #" + str(eng_num - eng_iter + 1) + ".")
-        current_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left) + PAYLOAD
+        current_stage_mass = (rocket_mass_total * (eng_size_list[n]/100)) + PAYLOAD
         # current stage mass is the mass of an engine times the number of stages left plus the mass of the payload
         printslow(testing_flag, "Mass of current stage: " + str(current_stage_mass) + " Kg.")
-        next_stage_mass = (eng_mass_struct + eng_mass_fuel) * (stages_left - 1) + PAYLOAD
+        if eng_iter != eng_num:
+            next_stage_mass = current_stage_mass - ((rocket_mass_total * (eng_size_list[n+1]/100)))
+        else:
+            next_stage_mass = PAYLOAD
         # next stage mass is the mass of an engine times the number of stages left minus the current plus the mass of the payload
         printslow(testing_flag, "Mass of next stage: " + str(next_stage_mass) + " Kg.")
         current_list.append(current_stage_mass) # to graph masses by stage later
