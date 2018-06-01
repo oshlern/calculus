@@ -166,7 +166,7 @@ def calculate(PAYLOAD, VEL_TARG, testing_flag, rocket_mass_total, fuel_mass_tota
         current_list.append(current_eng_mass)
         printslow(testing_flag, "Mass of current stage: " + str(current_eng_mass) + " Kg.")
         rocket_mass_left -= current_eng_mass
-        # because engines get jettisonned when they're used up and this assumes instant use
+        # because engines get jettisoned when they're used up and this assumes instant use
         printslow(testing_flag, "Engine #" + str(eng_display) + " pushing " + str(rocket_mass_left) + " Kg.")
         struct_ratio = (eng_mass_struct)/(current_eng_mass)
         # the structural ratio is the ratio of structural mass to total mass
@@ -178,7 +178,7 @@ def calculate(PAYLOAD, VEL_TARG, testing_flag, rocket_mass_total, fuel_mass_tota
         printslow(testing_flag, "Payload ratio: " + str(pay_ratio))
         eng_vel = eng_vel_list[eng] # retrieving engine velocity from earlier list
         vel_burnout_eng = eng_vel * (math.log(struct_ratio + ((1 - struct_ratio) * pay_ratio)))
-        # the burnout velocity of the engine is the engine veolcity times the log of the structural ratio times one minus the structural ratio times the payload Ratio
+        # the burnout velocity of the engine is the engine velocity times the log of the structural ratio times one minus the structural ratio times the payload ratio
         vel_list.append(vel_burnout_eng) # back into list for plotting later
         vel_burnout_total += vel_burnout_eng # to add up velocities
         printslow(testing_flag, "Engine #" + str(eng_display) + " velocity at burnout: " + str(vel_burnout_eng) + " Km/s.")
