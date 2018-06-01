@@ -9,8 +9,7 @@ The final rocket launch simulation file is rockets3.py. The other rocket files a
 
 ### Dependencies
 
-Python 3
-Matplotlib
+Python 3, matplotlib
 
 ### Installation and Use
 
