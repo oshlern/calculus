@@ -1,6 +1,11 @@
 import math, time, sys
 import matplotlib.pyplot as plot
 
+# really cool stuff. When you have bigger projects it might be useful to make things object oriented so you don't need to stor
+e a bunch of properties in their own variables and lists.
+# long blocks of code are a little confusing, if you could split it up or compile it into individual functions it might be mor
+e readable? Works as is tho
+
 VEL_TARG = 42 # velocity to escape the sun, in Km/s
 PAYLOAD = 1000 # payload mass, in Kg
 eng_dict_print = { # dictionary of types of engines and exhaust velocity in Km/s, formatted for print
@@ -52,12 +57,14 @@ def check_test(): # to disable type-printing when testing
     if test == "y":
         print("Test active")
         testing_flag = True
+	# you can directly write this to a global variable by using "global testing_flag" at the beginning of this function
     else:
         print("Test inactive")
         testing_flag = False
     return testing_flag
 
-def printslow(testing_flag, text):
+# it might make sense to only call the slow version of printing "printslow" and have that be inside the else of the if statement
+def printslow(testing_flag, text): # you can use a global testing_flag so you don't have to pass it in every time
     if testing_flag == True: # if testing, simply print
         print(text)
     else: # if not testing, print as if it's being typed
@@ -77,6 +84,8 @@ def get_inputs(testing_flag, PAYLOAD, eng_dict_print, eng_dict):
         rocket_mass_total = int(input())
         if rocket_mass_total >= PAYLOAD:
             break
+	# this should already taken care of by the while loop, so this if statement is redundant
+	# same thing for the other while loops
     printslow(testing_flag, "Valid rocket mass.")
     print("------- \n")
     printslow(testing_flag, "Input total fuel mass in Kg (numbers only, must be less than or equal to " + str(0.9 * rocket_mass_total) + " Kg).")
